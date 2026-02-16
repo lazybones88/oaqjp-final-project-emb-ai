@@ -1,0 +1,45 @@
+"""
+Flask server for the Emotion Detection web app.
+Serves the UI and the /emotionDetector API used by the frontend.
+"""
+from flask import Flask, request, render_template
+from emotion_detection import emotion_detector
+
+app = Flask(__name__)
+
+
+@app.route("/")
+def index():
+    """Serve the main page."""
+    return render_template("index.html")
+
+
+@app.route("/emotionDetector")
+def emotion_detector_route():
+    """
+    GET /emotionDetector?textToAnalyze=<text>
+    Returns formatted emotion analysis result for the frontend.
+    """
+    text_to_analyze = request.args.get("textToAnalyze", "")
+    if not text_to_analyze.strip():
+        return "Invalid text! Please try again."
+
+    try:
+        result = emotion_detector(text_to_analyze.strip())
+    except Exception as e:
+        return f"Error analyzing text: {e}"
+
+    # Format the result for display in the page
+    lines = [
+        f"anger: {result['anger']}",
+        f"disgust: {result['disgust']}",
+        f"fear: {result['fear']}",
+        f"joy: {result['joy']}",
+        f"sadness: {result['sadness']}",
+        f"dominant_emotion: {result['dominant_emotion']}",
+    ]
+    return "<br>".join(lines)
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
