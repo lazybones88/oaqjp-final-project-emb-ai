@@ -21,13 +21,15 @@ def emotion_detector_route():
     Returns formatted emotion analysis result for the frontend.
     """
     text_to_analyze = request.args.get("textToAnalyze", "")
-    if not text_to_analyze.strip():
-        return "Invalid text! Please try again."
 
     try:
         result = emotion_detector(text_to_analyze.strip())
     except Exception as e:
         return f"Error analyzing text: {e}"
+
+    # Error handling: when dominant_emotion is None (e.g. blank entry, status_code 400)
+    if result.get("dominant_emotion") is None:
+        return "Invalid text! Please try again!"
 
     # Format the result as specified: 'anger': x, 'disgust': x, 'fear': x, 'joy': x and 'sadness': x. The dominant emotion is X.
     response_text = (

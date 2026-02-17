@@ -6,12 +6,36 @@ def emotion_detector(text_to_analyze):
     """
     Run emotion detection using the Watson NLP Emotion Predict API.
     Returns a dictionary with emotion scores and the dominant emotion.
+    For blank entries or status_code 400, returns dict with all values None.
     """
+    # Blank entries: return dict with all None (same as status_code 400)
+    if not text_to_analyze or not text_to_analyze.strip():
+        return {
+            "anger": None,
+            "disgust": None,
+            "fear": None,
+            "joy": None,
+            "sadness": None,
+            "dominant_emotion": None,
+        }
+
     url = "https://sn-watson-emotion.labs.skills.network/v1/watson.runtime.nlp.v1/NlpService/EmotionPredict"
     headers = {"grpc-metadata-mm-model-id": "emotion_aggregated-workflow_lang_en_stock"}
     input_json = {"raw_document": {"text": text_to_analyze}}
 
     response = requests.post(url, json=input_json, headers=headers)
+
+    # For status_code 400 (e.g. blank or invalid input), return dict with all None
+    if response.status_code == 400:
+        return {
+            "anger": None,
+            "disgust": None,
+            "fear": None,
+            "joy": None,
+            "sadness": None,
+            "dominant_emotion": None,
+        }
+
     response_text = response.text
 
     # Convert the response text into a dictionary using json
