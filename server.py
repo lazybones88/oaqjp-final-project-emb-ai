@@ -29,16 +29,13 @@ def emotion_detector_route():
     except Exception as e:
         return f"Error analyzing text: {e}"
 
-    # Format the result for display in the page
-    lines = [
-        f"anger: {result['anger']}",
-        f"disgust: {result['disgust']}",
-        f"fear: {result['fear']}",
-        f"joy: {result['joy']}",
-        f"sadness: {result['sadness']}",
-        f"dominant_emotion: {result['dominant_emotion']}",
-    ]
-    return "<br>".join(lines)
+    # Format the result as specified: 'anger': x, 'disgust': x, 'fear': x, 'joy': x and 'sadness': x. The dominant emotion is X.
+    response_text = (
+        f"For the given statement, the system response is 'anger': {result['anger']}, "
+        f"'disgust': {result['disgust']}, 'fear': {result['fear']}, 'joy': {result['joy']} "
+        f"and 'sadness': {result['sadness']}. The dominant emotion is {result['dominant_emotion']}."
+    )
+    return response_text
 
 
 if __name__ == "__main__":
